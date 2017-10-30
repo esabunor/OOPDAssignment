@@ -1,0 +1,54 @@
+CLASS Genome
+
+CLASSFIELD:
+    sequence (String)
+
+DEFAULT CONSTRUCTOR:
+    sequence = "AGTC"
+
+ALTERNATE CONSTRUCTOR:
+IMPORTS: sequence (String)
+ALGORITHM: 
+    sequence = validateSequence<-sequence
+
+COPY CONSTRUCTOR:
+IMPORTS: sequence (String)
+ALGORITHM:
+    sequence = inGenome.getSequence
+
+ACCESSOR getSequence
+IMPORTS: None
+EXPORT: sequence
+
+MUTATOR setSequence
+IMPORTS: insequence
+EXPORT: sequence
+ALGORITHM:
+    sequence = validateSequence<-insequence
+
+SUBMODULE: validateSequence
+IMPORTS: insequence (String)
+EXPORT: sequence
+ALGORITHM:
+    sequence = insequence to uppercase
+    FOR i = 0 UP TO sequence.length DO:
+        IF not (insequence[i] == "A" or insequence[i] == "G" or insequence[i] == "C" or insequence[i] == "C" ) THEN:
+            FAIL "Sequence must be a string of AGTC"
+        ENDIF
+    ENDFOR
+
+SUBMODULE: clone
+IMPORTS: None
+EXPORT; outGenome
+ALGORITHM:
+    outGenome = construct Genome using this
+
+SUBMODULE: equals
+IMPORTS: obj (Object)
+EXPORT: isEquals (Boolean)
+ALGORITHM:
+    other = (Convert to Genome) obj
+    isEquals = false
+    IF sequence == other.getSequence THEN:
+        isEquals = true
+    ENDIF

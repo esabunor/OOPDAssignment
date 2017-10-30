@@ -1,0 +1,71 @@
+CLASS Plesiosaur inherits from Dinosaur
+
+CLASSFIELD:
+    hasTailFin (boolean)
+
+DEFAULT CONSTRUCTOR:
+    super<- "plesio the dino" , 20.0, "AGCT"
+    hasTailFin = true
+
+ALTERNATE CONSTRUCTOR:
+IMPORTS: inName (String), inMass (Real), inSequence(String), inhasTailFin (boolean)
+ALGORITHM: 
+    super<- inName, inMass, inSequence
+    hasTailFin = inhasTailFin
+
+COPY CONSTRUCTOR:
+IMPORTS: inPlesiosaur (Plesiosaur)
+ALGORITHM:
+    super<-inPlesiosaur.getName, inPlesiosaur.getMass, inPlesiosaur.getGenome, inPlesiosaur.getGenome.getSequence
+    hasTailFin = inPlesiosaur.isHasTailFin
+
+SUBMODULE: calcEnclosureSize
+IMPORTS: None
+EXPORT: size (Integer)
+ALGORITHM:
+    size = (Convert to Integer) ( mass * PI ) * ( 10.0 ^ 3.0)
+
+ACCESSOR gethasTailFin
+IMPORTS: None
+EXPORT: hasTailFin
+
+MUTATOR sethasTailFin
+IMPORTS: inhasTailFin
+EXPORT: None
+ALGORITHM:
+    hasTailFin = inhasTailFin
+
+SUBMODULE: toFile
+IMPORTS: None
+EXPORT: fileString (String)
+ALGORITHM:
+    fileString = getName + " , " + getMass + " , " + getGenome.getSequence + " , " + gethasTailFin
+
+clone
+IMPORTS: None
+EXPORT: outPlesiosaur (Plesiosaur)
+ALGORITHM: 
+	construct outPlesiosaur using this
+
+toString
+IMPORTS: None
+EXPORT: outString (String)
+ALGORITHM:
+    outString = "<PLESIO, " + getName + " , " + getMass + " , " + getGenome.getSequence + " , " + gethasTailFin + "/>"
+
+equals
+IMPORTS: obj (Object)
+EXPORT: isEquals (boolean)
+ALGORITHM:
+    isEquals = false
+    other = (Convert to Plesiosaur) obj
+    IF other.getGenome == getGenome THEN:
+        IF other.getMass == getMass THEN:
+            IF other.getName == getName THEN:
+                IF other.gethasTailFin == hasTailFin THEN:
+                    isEquals = true
+                ENDIF
+            ENDIF
+        ENDIF
+    ENDIF
+

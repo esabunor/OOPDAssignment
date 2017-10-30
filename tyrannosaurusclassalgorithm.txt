@@ -1,0 +1,79 @@
+CLASS Tyrannosaurus inherits from Dinosaur
+
+CLASSFIELD:
+    biteForce (Real)
+
+DEFAULT CONSTRUCTOR:
+    super<- "plesio the dino" , 20.0, "AGCT"
+    biteForce = true
+
+ALTERNATE CONSTRUCTOR:
+IMPORTS: inName (String), inMass (Real), inSequence(String), inbiteForce (Real)
+ALGORITHM: 
+    super<- inName, inMass, inSequence
+    biteForce = validateBiteForce<-inbiteForce
+
+COPY CONSTRUCTOR:
+IMPORTS: inTyrannosaurus (Tyrannosaurus)
+ALGORITHM:
+    super<-inTyrannosaurus.getName, inTyrannosaurus.getMass, inTyrannosaurus.getGenome, inTyrannosaurus.getGenome.getSequence
+    biteForce = inTyrannosaurus.getBiteForce
+
+SUBMODULE: calcEnclosureSize
+IMPORTS: None
+EXPORT: size (Integer)
+ALGORITHM:
+    size = (Convert to Integer) ( log2(mass) * biteForce ) * ( 10.0 )
+
+ACCESSOR getbiteForce
+IMPORTS: None
+EXPORT: biteForce
+
+MUTATOR setbiteForce
+IMPORTS: inbiteForce
+EXPORT: None
+ALGORITHM:
+    biteForce = validateBiteForce<-inbiteForce
+
+SUBMODULE: toFile
+IMPORTS: None
+EXPORT: fileString (String)
+ALGORITHM:
+    fileString = getName + " , " + getMass + " , " + getGenome.getSequence + " , " + getbiteForce
+
+SUBMODULE: validateinbiteForce
+IMPORTS: inbiteForce(Integer)
+EXPORT: inbiteForce
+ALGORITHM:
+    IF inbiteForce < 500.5 THEN:
+        FAIL "Bite Force must be greater than 500.5"
+    ENDIF
+
+clone
+IMPORTS: None
+EXPORT: outTyrannosaurus (Tyrannosaurus)
+ALGORITHM: 
+	construct outTyrannosaurus using this
+
+toString
+IMPORTS: None
+EXPORT: outString (String)
+ALGORITHM:
+    outString = "<TREX, " + getName + " , " + getMass + " , " + getGenome.getSequence + " , " + getbiteForce + "/>"
+
+equals
+IMPORTS: obj (Object)
+EXPORT: isEquals (boolean)
+ALGORITHM:
+    isEquals = false
+    other = (Convert to Tyrannosaurus) obj
+    IF other.getGenome == getGenome THEN:
+        IF other.getMass == getMass THEN:
+            IF other.getName == getName THEN:
+                IF other.getbiteForce == biteForce THEN:
+                    isEquals = true
+                ENDIF
+            ENDIF
+        ENDIF
+    ENDIF
+

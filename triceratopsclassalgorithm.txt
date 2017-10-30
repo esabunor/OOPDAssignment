@@ -1,0 +1,78 @@
+CLASS Triceratops inherits from Dinosaur
+
+CLASSFIELD:
+    numHorns (Integer)
+
+DEFAULT CONSTRUCTOR:
+    super<- "tricera the dino" , 20.0, "AGCT"
+    numHorns = 3
+
+ALTERNATE CONSTRUCTOR:
+IMPORTS: inName (String), inMass (Real), inSequence(String), inNumHorns (Integer)
+ALGORITHM: 
+    super<- inName, inMass, inSequence
+    numHorns = inNumHorns
+
+COPY CONSTRUCTOR:
+IMPORTS: inTriceratops (Triceratops)
+ALGORITHM:
+    super<-inTriceratops.getName, inTriceratops.getMass, inTriceratops.getGenome, inTriceratops.getGenome.getSequence
+
+SUBMODULE: calcEnclosureSize
+IMPORTS: None
+EXPORT: size (Integer)
+ALGORITHM:
+    size = (Convert to Integer) ( mass * 5.5 ) * ( 4.0 ^ numHorns)
+
+ACCESSOR getNumHorns
+IMPORTS: None
+EXPORT: numHorns
+
+MUTATOR setNumHorns
+IMPORTS: inNumHorns
+EXPORT: None
+ALGORITHM:
+    numHorns = validateNumHorns<-inNumHorns
+
+SUBMODULE: toFile
+IMPORTS: None
+EXPORT: fileString (String)
+ALGORITHM:
+    fileString = getName + " , " + getMass + " , " + getGenome.getSequence + " , " + getNumHorns
+
+SUBMODULE: validateNumHorns
+IMPORTS: inNumHorns(Integer)
+EXPORT: inNumHorns
+ALGORITHM:
+    IF inNumHorns MOD 3 != 0 THEN:
+        FAIL "Number of Horns must be a multiple of 3"
+    ENDIF
+
+clone
+IMPORTS: None
+EXPORT: outTriceratops (Triceratops)
+ALGORITHM: 
+	construct outTriceratops using this
+
+toString
+IMPORTS: None
+EXPORT: outString (String)
+ALGORITHM:
+    outString = "<TRI, " + getName + " , " + getMass + " , " + getGenome.getSequence + " , " + getNumHorns + "/>"
+
+equals
+IMPORTS: obj (Object)
+EXPORT: isEquals (boolean)
+ALGORITHM:
+    isEquals = false
+    other = (Convert to Triceratops) obj
+    IF other.getGenome == getGenome THEN:
+        IF other.getMass == getMass THEN:
+            IF other.getName == getName THEN:
+                IF other.getNumHorns == numHorns THEN:
+                    isEquals = true
+                ENDIF
+            ENDIF
+        ENDIF
+    ENDIF
+

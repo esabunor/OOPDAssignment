@@ -1,0 +1,145 @@
+Abstract CLASS Dinosaur
+
+CLASSFIELD:
+    name (String)
+    mass (Real)
+    genome (Genome)
+
+DEFAULT CONSTRUCTOR:
+    mass = 0.0
+    name = "Default Dinosaur"
+    genome = construct genome using Default
+
+ALTERNATE CONSTRUCTOR:
+IMPORTS: inName (String), inMass (Real), inSequence(String)
+ALGORITHM: 
+    name = inName
+    mass = inMass
+    genome = construct Genome using inSequence
+
+COPY CONSTRUCTOR:
+IMPORTS: inDinosaur (Dinosaur)
+ALGORITHM:
+    name = inDinosaur.getMass
+    mass = inDinosaur.getName
+    genome = inDinosaur.getGenome
+
+ACCESSOR getName
+IMPORTS: None
+EXPORT: name
+
+ACCESSOR getMass
+IMPORTS: None
+EXPORT: mass
+
+ACCESSOR getGenome
+IMPORTS: None
+EXPORT: outGenome
+ALGORITHM:
+    outGenome = genome.clone<-None
+
+MUTATOR setName
+IMPORTS: inName
+EXPORT: None
+ALGORITHM:
+    name = validateName<-inName
+
+MUTATOR setMass
+IMPORTS: inMass
+EXPORT: None
+ALGORITHM:
+    mass = validateMass<-inMass
+
+MUTATOR setGenome
+IMPORTS: inGenome
+EXPORT: None
+ALGORITHM:
+    genome = inGenome
+
+SUBMODULE: validateName
+IMPORTS: inName (Real)
+EXPORT: inName
+ALGORITHM:
+    IF inName == "" THEN:
+        FAIL "Name can't be empty "
+    ENDIF
+
+SUBMODULE: validateMass
+IMPORTS: inMass(Real)
+EXPORT: inMass
+ALGORITHM:
+    IF inMass < 0 THEN:
+        FAIL "Mass cannot be less not zero "
+    ENDIF
+
+SUBMODULE: printTriceratops
+IMPORTS: dinosaur (2D Array of Dinosaur), count (Integer)
+EXPORT: None
+ALGORITHM:
+    file = OPENFILE "output.txt"
+    row = count DIV 10
+    col = 0
+    IF count MOD 10 == 0 THEN:
+        col = 0
+    ELSE:
+        col = (count MOD 10) - 1
+    ENDIF 
+    FOR i = 0 TO row (inclusive) CHANGE BY 1:
+        FOR j = 0 TO col (inclusive) CHANGE BY 1:
+            IF dinosaur[i][j] is a Triceratops THEN:
+                OUTPUT TO file dinosaur[i][j]
+            ENDIF
+        ENDFOR
+    ENDFOR
+
+SUBMODULE: printPlesiosaur
+IMPORTS: dinosaur (2D Array of Dinosaur), count (Integer)
+EXPORT: None
+ALGORITHM:
+    file = OPENFILE "output.txt"
+    row = count DIV 10
+    col = 0
+    IF count MOD 10 == 0 THEN:
+        col = 0
+    ELSE:
+        col = (count MOD 10) - 1
+    ENDIF 
+    FOR i = 0 TO row (inclusive) CHANGE BY 1:
+        FOR j = 0 TO col (inclusive) CHANGE BY 1:
+            IF dinosaur[i][j] is a Plesiosaur THEN:
+                OUTPUT TO file dinosaur[i][j]
+            ENDIF
+        ENDFOR
+    ENDFOR
+
+SUBMODULE: printTyrannosaurus
+IMPORTS: dinosaur (2D Array of Dinosaur), count (Integer)
+EXPORT: None
+ALGORITHM:
+    file = OPENFILE "output.txt"
+    row = count DIV 10
+    col = 0
+    IF count MOD 10 == 0 THEN:
+        col = 0
+    ELSE:
+        col = (count MOD 10) - 1
+    ENDIF 
+    FOR i = 0 TO row (inclusive) CHANGE BY 1:
+        FOR j = 0 TO col (inclusive) CHANGE BY 1:
+            IF dinosaur[i][j] is a Tyrannosaurus THEN:
+                OUTPUT TO file dinosaur[i][j]
+            ENDIF
+        ENDFOR
+    ENDFOR
+
+Abstract clone
+IMPORTS: None
+EXPORT: outDinosaur (Dinosaur)
+
+SUBMODULE: Abstract toFile
+IMPORTS: None
+EXPORT: fileString (String)
+
+SUBMODULE: Abstract calcEnclosureSize
+IMPORTS: None
+EXPORT: size (Integer)

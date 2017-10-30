@@ -1,0 +1,3 @@
+Main:
+    ClInterface.run<-None
+ENDMAIN

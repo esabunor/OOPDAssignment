@@ -1,0 +1,119 @@
+CLASS JurassicPark
+
+CLASSFIELD:
+    dinosaurs (2D Array of Dinosaurs)
+    count (Integer)
+    constructed (Boolean)
+
+DEFAULT CONSTRUCTOR:
+    dinosaurs = (Array of dinosaurs size of 10 X 10)
+    count = 0
+    constructed true
+
+ALTERNATE CONSTRUCTOR:
+IMPORTS: inDinosaurs (2D Array of Dinosaurs), inCount (Integer)
+ALGORITHM: 
+    IF count > 1000 THEN:
+        FAIL "Dinosaurs cannot be more than 1000"
+    ENDIF
+    dinosaurs = inDinosaurs
+    count = inCount
+    constructed = true
+
+COPY CONSTRUCTOR:
+IMPORTS: other (JurassicPark)
+ALGORITHM:
+    dinosaurs<-other.getDinosaurs
+    count<-other.getCount  
+    constructed = other.isConstructed
+
+ACCESSOR getDinosaurs
+IMPORTS: None
+EXPORT: outDinosaurs
+ALGORITHM:
+    outDinosaurs = (2d Array of Dinosaurs size of dinosaurs.length X dinosaurs[0].length)
+    row = count DIV 10
+    col = 0
+    IF count MOD 10 == 0 THEN:
+        col = 0
+    ELSE:
+        col = (count MOD 10) - 1
+    ENDIF
+    FOR i = 0 TO row (inclusive) CHANGE BY 1:
+        FOR j = 0 TO col (inclusive) CHANGE BY 1:
+            outDinosaurs[i][j] = dinosaurs[i][j].clone
+        ENDFOR
+    ENDFOR
+    
+ACCESSOR getCount
+IMPORTS: None
+EXPORT: count
+
+ACCESSOR isConstructed
+IMPORTS none
+EXPORT: count
+
+MUTATOR setDinosaurs
+IMPORTS inDinosaurs (2D Array of Dinosaurs)
+EXPORT: None
+ALGORITHM:
+    IF inDinosaurs.length * dinosaurs[0].length > 1000 THEN:
+        FAIL "JurassicPark can not have more than 1000 dinosaurs"
+    ENDIF
+    dinosaurs = inDinosaurs
+
+MUTATOR setCount
+IMPORTS: inCount (Integer)
+EXPORT: None
+ALGORITHM:
+    count = inCount
+
+MUTATOR setConstructed
+IMPORTS: inConstructed
+EXPORT: None
+ALGORITHM:
+    constructed = inConstructed
+
+SUBMODULE: addDinosaur
+IMPORTS: inDinosaur
+EXPORT: None
+ALGORITHM: 
+    IF ( (count + 1) < (dinosaurs.length * dinosaurs[0].length)) THEN:
+        count = count + 1
+        row = count DIV 10
+        col = 0
+        IF count MOD 10 == 0 THEN:
+            col = 0
+        ELSE:
+            col = (count MOD 10) - 1
+        ENDIF 
+        dinosaurs[row][col] = inDinosaur
+    ELSE:
+        FAIL "Theres no more room in the JurassicPark"
+    ENDIF
+
+SUBMODULE: clone
+IMPORTS: none
+EXPORT: jp (JurassicPark)
+ALGORITHM:
+    construct jp using this
+
+SUBMODULE: toString
+IMPORTS: None
+EXPORT: outString (String)
+ALGORITHM:
+    outString = "Jurassic Park with " + count + " number of dinosaurs"
+
+SUBMODULE: equals
+IMPORTS: obj (Object)
+EXPORT: isEquals (Boolean)
+ALGORITHM:
+    isEquals = false
+    JurassicPark other = (Convert to JurassicPark) obj
+    IF other.getDinosaurs == dinosaurs THEN:
+        IF other.constructed == constructed THEN:
+            IF other.getCount == count THEN:
+                isEquals = true
+            ENDIF
+        ENDIF
+    ENDIF

@@ -1,0 +1,256 @@
+CLASS CLInterface
+
+CLASSFIELD:
+    jp (JurassicPark)
+
+SUBMODULE: addDinosaur
+IMPORTS: dinosaur (Dinosaur)
+EXPORT: None
+ALGORITHM:
+    IF jp == null THEN:
+        jp = construct JurassicPark using default
+    ENDIF
+    jp.addDinosaur<-dinosaur
+
+SUBMODULE: inputDinosaur
+IMPORTS: None
+EXPORT: None
+ALGORITHM:
+    OUTPUT "What type of dinosaur"
+    OUTPUT "1.Triceratops"
+    OUTPUT "2.Plesiosaur"
+    OUTPUT "3.Tyrannosaurus"
+    INPUT option 
+    OUTPUT "Provide the dinosaur information in the following format"
+    OUTPUT "Name. Mass, Genome, Other Characteristics"
+    INPUT dinoString
+    dinoArr = dinoString.split<- ","
+    CASE option:
+        1:
+            addDinosaur<-instantiateTriceratops<-dinoArr
+        2:
+            addDinosaur<-instantiatePlesiosaur<-dinoArr
+        3:
+            addDinosaur<-instantiateTyrannosaurus<-dinoArr
+        DEFAULT:
+            OUTPUT "Invalid option"
+    ENDCASE
+    
+SUBMODULE: displayDinosaurs
+IMPORTS: None
+EXPORT: None
+ALGORITHM:
+    IF jp == null THEN:
+        FAIL "Jurassic park has not been constructed there are no dinosaurs"
+    ENDIF
+    count = jp<-getCount
+    row = count DIV 10
+    col = 0
+    IF count MOD 10 == 0 THEN:
+        col = 0
+    ELSE:
+        col = (count MOD 10) - 1
+    ENDIF
+    FOR i = 0 TO row (inclusive) CHANGE BY 1:
+        FOR j = 0 TO col (inclusive) CHANGE BY 1:
+            OUTPUT jp.getDinosaurs[i][j].toString
+        ENDFOR
+    ENDFOR
+
+SUBMODULE: calcParkSize
+IMPORTS: None
+EXPORT: None
+ALGORITHM: 
+    size = 0
+    IF jp == null THEN:
+        FAIL "Jurassic park has not been constructed so size = 0"
+    ENDIF
+    count = jp<-getCount
+    row = count DIV 10
+    col = 0
+    IF count MOD 10 == 0 THEN:
+        col = 0
+    ELSE:
+        col = (count MOD 10) - 1
+    ENDIF
+    FOR i = 0 TO row (inclusive) CHANGE BY 1:
+        FOR j = 0 TO col (inclusive) CHANGE BY 1:
+            size = size + jp.getDinosaurs[i][j].calcEnclosureSize
+        ENDFOR
+    ENDFOR
+    OUTPUT "Enclosure Size is " + size
+
+SUBMODULE: instantiatePlesiosaur
+IMPORTS: dinoArr (Array of Strings)
+EXPORT: dinosaur (Dinosaur)
+ALGORITHM:
+    name = dinoArr[0]
+    Mass = (Convert to Real) dinoArr[1]
+    sequence = dinoArr[2]
+    hasTailFin = dinoArr[3]
+    dinosaur = construct Plesiosaur using name, mass, sequence, hasTailFin
+
+SUBMODULE: instantiateTriceratops
+IMPORTS: dinoArr (Array of Strings)
+EXPORT: dinosaur (Dinosaur)
+ALGORITHM:
+    name = dinoArr[0]
+    Mass = (Convert to Real) dinoArr[1]
+    sequence = dinoArr[2]
+    numHorns = dinoArr[3]
+    dinosaur = construct Triceratops using name, mass, sequence, numHorns
+
+SUBMODULE: instantiateTyrannosaurus
+IMPORTS: dinoArr (Array of Strings)
+EXPORT: dinosaur (Dinosaur)
+ALGORITHM:
+    name = dinoArr[0]
+    Mass = (Convert to Real) dinoArr[1]
+    sequence = dinoArr[2]
+    biteForce = dinoArr[3]
+    dinosaur = construct Tyrannosaurus using name, mass, sequence, biteForce
+
+SUBMODULE: run
+IMPORTS: None
+EXPORT: None
+ALGORITHM:
+    exit = false
+    WHILE exit is not true DO:
+        OUTPUT "Select from the following options "
+        OUTPUT "1. Add a Dinosaur"
+        OUTPUT "2. Display Dinosaurs"
+        OUTPUT "3. Calculate park size"
+        OUTPUT "4. Read in a Jurassic park file"
+        OUTPUT "5, Write out to Jurassic park file"
+        OUTPUT "6. Exit"
+        INPUT option
+        CASE option:
+            1:
+                inputDinosaur<-None
+            2:
+                displayDinosaurs<-None
+            3:
+                calcParkSize<-None
+            4:
+                readFile<-None
+            5:
+                writeFile<-None
+            6:
+                exit = true
+                OUTPUT "goodbye"
+            DEFAULT:
+                OUTPUT "Invalid selection"
+        ENDCASE
+    ENDWHILE
+
+SUBMODULE: readFile
+IMPORTS: None
+EXPORT: None
+ALGORITHM:
+    IF jp != null THEN:
+        FAIL "Jurassic Park cannot be ocnstructed, IT HAS already been constructed"
+    ENDIF
+
+    pattern = Pattern.compile<-"(((\\s)*[\\w+\\,](\\s)*)+((\\s)*\\w+(\\s)*\\,)+((\\s)*\\d+(\\.)*\\d+(\\s)*\\,)((\\s)*\\w+(\\s)*\\,)((\\s)*[(\\w+).]*))"
+    dinosaurCount = 0
+
+    OUTPUT "Please Provide the name of the file to be read"
+    INPUT filename
+
+    file = OPENFILE filename
+	IF file CANT BE OPENED THEN:
+		FAIL ( THROW EXCEPTION)
+	ENDIF
+
+    INPUT line FROM file
+	
+	WHILE (line NOT EOF) DO:
+        
+        matcher = pattern.matcher<- line
+
+        WHILE matcher.find DO:
+            dinosaurCount = dinosaurCount + 1
+            dinoString = line.substring<-matcher.start, matcher.end
+            dinoArr = dinoString.split(",")
+            IF dinoArr[0] != "tri" or dinoArr[0] != "trex" or dinoArr[0] != "plesio" THEN:
+                FAIL "THE file is not in a correct format"
+            ENDIF
+        ENDWHILE
+
+        INPUT line FROM file
+    ENDWHILE
+
+    readDinosaurs<-filename, dinosaurCount
+
+SUBMODULE: readDinosaurs
+IMPORTS: filename (String), dinosaurCount (Integer)
+EXPORT: None
+ALGORITHM:
+    dinosaurs = (2D Array of Dinosaur) (size (dinosaurCount DIV 10) + 1 BY 10)
+    pattern = Pattern.compile<-"(((\\s)*[\\w+\\,](\\s)*)+((\\s)*\\w+(\\s)*\\,)+((\\s)*\\d+(\\.)*\\d+(\\s)*\\,)((\\s)*\\w+(\\s)*\\,)((\\s)*[(\\w+).]*))"
+    dinosaurCount2 = 0
+    row = 0 
+    col = 0
+
+    file = OPENFILE filename
+	IF file CANT BE OPENED THEN:
+		FAIL ( THROW EXCEPTION)
+	ENDIF
+
+    INPUT line FROM file
+	
+	WHILE (line NOT EOF) DO:
+        
+        matcher = pattern.matcher<- line
+
+        WHILE matcher.find DO:
+            row = dinosaurCount DIV 10
+            IF dinosaurCount MOD 10 == 0 THEN:
+                col = 0
+            ELSE:
+                col = (dinosaurCount MOD 10) - 1
+            ENDIF
+            dinosaurCount2 = dinosaurCount2 + 1
+            dinoString = line.substring<-matcher.start, matcher.end
+            dinoArr = dinoString.split(",")
+            
+            IF dinoArr[0] == "tri" THEN:
+                dinosaurs[row][col] = instantiateTriceratops
+            ELSE IF dinoArr[0] == "trex" THEN:
+                dinosaurs[row][col] = instantiateTyrannosaurus
+            ELSE IF dinoArr[0] == "plesio" THEN:
+                dinosaurs[row][col] = instantiatePlesiosaur
+            ELSE:
+                FAIL "THE file is not in a correct format"
+            ENDIF
+        ENDWHILE
+
+        INPUT line FROM file
+    ENDWHILE
+
+    jp = construct JurassicPark using dinosaurs, dinosaurCount
+    
+SUBMODULE: writeFile
+IMPORTS: None
+EXPORT: None
+ALGORITHM:
+    IF jp != null THEN:
+        OUTPUT "Select which type of dinosaur you want to print to file"
+        OUTPUT "a. Triceratops"
+        OUTPUT "b. Tyrannosaurus"
+        OUTPUT "c. Plesiosaur"
+        INPUT option
+        CASE option:
+            'a':
+                Dinosaur.printTriceratops<-jp.getDinosaurs, jp.getCount
+            'b':
+                Dinosaur.printTyrannosaurus<-jp.getDinosaurs, jp.getCount
+            'c':
+                Dinosaur.printPlesiosaur<-jp.getDinosaurs, jp.getCount
+            DEFAULT:
+                OUTPUT "Invalid selection"
+        ENDCASE
+    ELSE:
+        OUTPUT "There are no dinosaurs in the Jurassic park"
+    ENDIF
+    
